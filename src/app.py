@@ -16,7 +16,7 @@ from src.translations import gettext, pretty_date
 app = Flask(__name__)
 
 
-environ.setdefault('CELERY_CONFIG_MODULE', 'celery_config')
+environ.setdefault('CELERY_CONFIG_MODULE', 'src.celery_config')
 
 celery_app = Celery()
 celery_app.config_from_envvar('CELERY_CONFIG_MODULE')

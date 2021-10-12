@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.5'
 services:
   redis:
     image: redis
@@ -9,7 +9,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: madefire/chordtest
-    command: ['celery', 'worker', '-A', 'app.app', '-l', 'info']
+    command: ['celery', '-A', 'src.app.celery_app', 'worker', '-l', 'info']
     environment:
       - BROKER_URL=redis://redis:6379/0 # para encolar
       - RESULT_BACKEND=redis://redis:6379/0 # para guardar el resultado
