@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  redis:
+    image: redis
+    ports:
+    - "6379:6379"
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: madefire/chordtest
+    command: ['celery', 'worker', '-A', 'app.app', '-l', 'info']
+    environment:
+      - BROKER_URL=redis://redis:6379/0 # para encolar
+      - RESULT_BACKEND=redis://redis:6379/0 # para guardar el resultado
+      - C_FORCE_ROOT=true
+    volumes:
+      - ./:/app/
+    depends_on:
+      - redis
+  database:
+      image: postgres:latest
+      restart: always
+      volumes:
+        - data:/var/lib/postgresql/data
+        - ./migrations:/docker-entrypoint-initdb.d
+      environment:
+        POSTGRES_PASSWORD: example
+        POSTGRES_USER: gesina-dev
+        POSTGRES_DB: gesina-dev
+
+volumes:
+  data:
