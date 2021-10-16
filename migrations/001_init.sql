@@ -11,7 +11,7 @@ create table if not exists gesina."user"
 	password text not null
 );
 
-alter table gesina."user" owner to "gesina-dev";
+alter table gesina."user" owner to "user";
 
 create table if not exists gesina.geometry
 (
@@ -26,7 +26,7 @@ create table if not exists gesina.geometry
 			references gesina."user"
 );
 
-alter table gesina.geometry owner to "gesina-dev";
+alter table gesina.geometry owner to "user";
 
 create unique index if not exists geometry_id_uindex
 	on gesina.geometry (id);
@@ -54,7 +54,7 @@ create table if not exists gesina.execution_plan
 	status text not null
 );
 
-alter table gesina.execution_plan owner to "gesina-dev";
+alter table gesina.execution_plan owner to "user";
 
 create unique index if not exists execution_plan_id_uindex
 	on gesina.execution_plan (id);
@@ -66,7 +66,7 @@ create table if not exists gesina.flow
 			primary key
 );
 
-alter table gesina.flow owner to "gesina-dev";
+alter table gesina.flow owner to "user";
 
 create unique index if not exists flow_id_uindex
 	on gesina.flow (id);

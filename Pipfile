@@ -19,6 +19,8 @@ numpy = "*"
 geopandas = "*"
 geopip = "*"
 celery = {extras = ["redis"], version = "*"}
+sqlalchemy = "*"
+psycopg2-binary = "*"
 
 [dev-packages]
 pytest = "==6.2.2"
