@@ -22,7 +22,7 @@ services:
       image: postgres:latest
       restart: always
       volumes:
-        - data:/var/lib/postgresql/data
+        - database:/var/lib/postgresql/data
         - ./migrations:/docker-entrypoint-initdb.d
       environment:
         POSTGRES_PASSWORD: example
@@ -30,5 +30,15 @@ services:
         POSTGRES_DB: gesina-dev
       ports:
         - 5432:5432
+  minio:
+      image: minio/minio:RELEASE.2021-07-22T05-23-32Z
+      ports:
+        - 9000:9000
+        - 9001:9001
+      volumes:
+        - minio:/data
+      command: server /data --console-address ":9001"
+
 volumes:
-  data:
+  database:
+  minio:
