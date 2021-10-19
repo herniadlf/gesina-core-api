@@ -23,15 +23,13 @@ app.jinja_env.globals.update(current_user=current_user)
 
 @app.route("/health-check")
 def health_check():
-    from src.tasks import add
-    result = add.delay(1, 2)
-    resultado = result.get(timeout=1)
-    return jsonify({"status": resultado}), HTTPStatus.OK
+    return jsonify({"status": "ok"}), HTTPStatus.OK
 
 
 @app.errorhandler(HTTPStatus.NOT_FOUND)
 def page_not_found(e):
     return redirect(url_for("backoffice_controller.home")), HTTPStatus.MOVED_PERMANENTLY
+
 
 app.json_encoder = CustomJSONEncoder
 

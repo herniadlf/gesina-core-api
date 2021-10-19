@@ -1,16 +1,25 @@
-from sqlalchemy import Integer, Column, create_engine, ForeignKey, String, DateTime, MetaData
+from sqlalchemy import (
+    Integer,
+    Column,
+    create_engine,
+    ForeignKey,
+    String,
+    DateTime,
+    MetaData,
+)
 from sqlalchemy.orm import relationship, joinedload, subqueryload, Session
 from sqlalchemy.ext.declarative import declarative_base
 from contextlib import contextmanager
 import os
 
-Base = declarative_base(metadata = MetaData(schema="gesina"))
+Base = declarative_base(metadata=MetaData(schema="gesina"))
 
 user = os.getenv("DATABASE_USER", "user")
 password = os.getenv("DATABASE_PASSWORD", "password")
 database_name = os.getenv("DATABASE_NAME", "main")
 
 engine = create_engine(f"postgresql://{user}:{password}@localhost:5432/{database_name}")
+
 
 @contextmanager
 def get_session():
