@@ -6,6 +6,7 @@ from src.service.backoffice_user_service import current_user
 from src.controller import (
     BACKOFFICE_BLUEPRINT,
     BACKOFFICE_USER_BLUEPRINT,
+    GEOMETRY_BLUEPRINT,
 )
 from src.exception_handler import set_up_exception_handlers
 from src.translations import gettext, pretty_date
@@ -15,6 +16,7 @@ app = Flask(__name__)
 
 app.register_blueprint(BACKOFFICE_BLUEPRINT, url_prefix="/backoffice")
 app.register_blueprint(BACKOFFICE_USER_BLUEPRINT, url_prefix="/backoffice_user")
+app.register_blueprint(GEOMETRY_BLUEPRINT, url_prefix="/geometry")
 
 app.jinja_env.globals.update(gettext=gettext)
 app.jinja_env.globals.update(pretty_date=pretty_date)
