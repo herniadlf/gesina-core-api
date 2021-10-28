@@ -19,7 +19,7 @@ engine = create_engine(f"postgresql://{user}:{password}@localhost:5432/{database
 
 @contextmanager
 def get_session():
-    session = Session(expire_on_commit=False)
+    session = Session(expire_on_commit=False, bind=engine)
     try:
         yield session
         session.commit()
@@ -31,6 +31,6 @@ def get_session():
         session.close()
 
 
-def persist(persistable_object):
+def persist(object_to_persist):
     with get_session() as session:
-        session.add(persistable_object)
+        session.add(object_to_persist)

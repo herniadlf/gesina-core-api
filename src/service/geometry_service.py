@@ -1,9 +1,29 @@
+from datetime import datetime
 
-# def create_geometry(request):
-#     validate_creation_request(request)
+from src.persistance import Geometry
+from src.persistance.session import get_session
+from src.service import file_storage_service
 
-    # Creo objeto de negocio Geometry con id
-    # Si la base me da OK, intento subirlo a minio. Si falla, rollbackeo base y tiro error
-    # Si la base falla, tiro error
 
-    # file_service.
+def create(request):
+    validate_creation_request(request)
+
+    file = request.files["file"]
+    name = file.filename
+    description = "Some Description"  # hardcode
+    user_id = 1  # hardcode
+    created_at = datetime.now()
+
+    geometry = Geometry(
+        name=name, description=description, user_id=user_id, created_at=created_at
+    )
+    with get_session() as session:
+        session.add(geometry)
+        file_storage_service.save_geometry(file)
+
+    return geometry
+
+
+def validate_creation_request(request):
+    file_storage_service.validate_file(request.files)
+    # validate other mandatory fields..

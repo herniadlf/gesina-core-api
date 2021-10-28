@@ -15,10 +15,5 @@ class Geometry(Base):
     name = Column(String)
     description = Column(String)
     created_at = Column(DateTime)
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey("user.id"))
     user = relationship("User")
-
-
-class Flow(Base):
-    __tablename__ = "flow"
-    id = Column(Integer, primary_key=True)
