@@ -35,4 +35,3 @@ def save_geometry(file):
         error_message = "Error uploading file"
         current_app.logger.error(error_message, exception)
         raise FileUploadError(error_message)
-
