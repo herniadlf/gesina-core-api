@@ -10,6 +10,13 @@ minio_url = os.getenv("MINIO_URL", "localhost:9000")
 minio_user = os.getenv("MINIO_ROOT_USER", "minioadmin")
 minio_password = os.getenv("MINIO_ROOT_PASSWORD", "password")
 
+minio_client = Minio(
+    endpoint=minio_url,
+    access_key=minio_user,
+    secret_key=minio_password,
+    secure=False,
+)
+
 
 def validate_file(files_in_request):
     if "file" not in files_in_request:
@@ -21,12 +28,6 @@ def validate_file(files_in_request):
 
 
 def save_geometry(file):
-    minio_client = Minio(
-        endpoint=minio_url,
-        access_key=minio_user,
-        secret_key=minio_password,
-        secure=False,
-    )
     file_bytes = file.read()
     data = io.BytesIO(file_bytes)
     try:
