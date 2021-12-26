@@ -1,5 +1,6 @@
+from datetime import datetime
 from http import HTTPStatus
-from flask import Flask, jsonify, redirect, url_for
+from flask import Flask, jsonify, redirect, url_for, request
 
 from src.controller.execution_plan_controller import EXECUTION_PLAN_BLUEPRINT
 from src.encoders import CustomJSONEncoder
@@ -11,6 +12,7 @@ from src.controller import (
     VIEW_BLUEPRINT,
 )
 from src.exception_handler import set_up_exception_handlers
+from src.service.file_maker_service import make_prj_file
 from src.translations import gettext, pretty_date
 from src import logger
 from src import config
@@ -35,6 +37,17 @@ app.jinja_env.globals.update(current_user=current_user)
 @app.route("/health-check")
 def health_check():
     return jsonify({"status": "ok"}), HTTPStatus.OK
+
+
+@app.route("/project-test", methods=["POST"])
+def make_project_file():
+    json_request = request.get_json()
+    data = {
+        "title": json_request['title'],
+        "start_date": datetime.strptime(json_request['start_date'], "%d/%m/%Y %H:%M:%S"),
+        "end_date": datetime.strptime(json_request['end_date'], "%d/%m/%Y %H:%M:%S")
+    }
+    return make_prj_file(**data)
 
 
 @app.route("/test")
