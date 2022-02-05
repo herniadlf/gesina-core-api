@@ -1,4 +1,4 @@
-Proj Title=$ProjectTitle
+Proj Title=$PROJECT_TITLE
 Current Plan=p01
 Default Exp/Contr=0.3,0.1
 SI Units
@@ -11,10 +11,10 @@ X Axis Title(XS)=Station
 BEGIN DESCRIPTION:
  
 END DESCRIPTION:
-DSS Start Date=$StartDate
-DSS Start Time=$StartTime
-DSS End Date=$EndDate
-DSS End Time=$EndTime
+DSS Start Date=$START_DATE
+DSS Start Time=$START_TIME
+DSS End Date=$END_DATE
+DSS End Time=$END_TIME
 DSS File=dss
 DSS Export Filename=
 DSS Export Rating Curves= 0 

@@ -4,11 +4,11 @@ from string import Template
 
 def make_prj_file(title, start_date: datetime, end_date: datetime):
     data = {
-        "ProjectTitle": title,
-        "StartDate": start_date.strftime("%d%b%Y"),
-        "StartTime": start_date.strftime("%H:%M"),
-        "EndDate": end_date.strftime("%d%b%Y"),
-        "EndTime": end_date.strftime("%H:%M")
+        "PROJECT_TITLE": title,
+        "START_DATE": start_date.strftime("%d%b%Y"),
+        "START_TIME": start_date.strftime("%H:%M"),
+        "END_DATE": end_date.strftime("%d%b%Y"),
+        "END_TIME": end_date.strftime("%H:%M")
     }
     with open('src/file_templates/prj_template.txt', 'r') as f:
         src = Template(f.read())
