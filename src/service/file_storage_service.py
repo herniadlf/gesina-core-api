@@ -1,7 +1,10 @@
 import io
+import logging
 import os
 
 from minio import Minio
+from minio.commonconfig import CopySource
+
 from src import logger, config
 
 from src.service.exception.file_exception import FileUploadError, FilePreSignedUrlError
@@ -17,11 +20,23 @@ minio_client = Minio(
 ROOT_BUCKET = config.minio_bucket
 
 GEOMETRY_FOLDER = "geometry"
-EXECUTION_FOLDER = f"{ROOT_BUCKET}/execution-plans"
+EXECUTION_FOLDER = "execution-plans"
 
 
 def save_geometry(file):
     save_file(GEOMETRY_FOLDER, file)
+
+
+def save_execution_file(file, execution_id):
+    save_file(f"{EXECUTION_FOLDER}/{execution_id}", file)
+
+
+def copy_geometry_to(execution_id, geometry_filename):
+    minio_client.copy_object(
+        ROOT_BUCKET,
+        f"{EXECUTION_FOLDER}/{execution_id}/{geometry_filename}",
+        CopySource(ROOT_BUCKET, f"{GEOMETRY_FOLDER}/{geometry_filename}"),
+    )
 
 
 def save_file(folder, file):
@@ -55,8 +70,17 @@ def list_files_for_execution(execution_id):
     return minio_client.list_objects(ROOT_BUCKET, f"{EXECUTION_FOLDER}/{execution_id}/")
 
 
-def get_file_for_execution(file):
-    return minio_client.get_object(ROOT_BUCKET, f"{EXECUTION_FOLDER}/{file}")
+def get_file(file, bucket=ROOT_BUCKET):
+    logging.info(f"Obtaining file {file} from bucket {bucket}")
+    return minio_client.get_object(bucket, file)
+
+
+def get_geometry_file(file):
+    return get_file(f"{GEOMETRY_FOLDER}/{file}")
+
+
+def get_execution_file(file):
+    return get_file(f"{EXECUTION_FOLDER}/{file}")
 
 
 def download_files_for_execution(base_path, execution_id):
@@ -67,7 +91,8 @@ def download_files_for_execution(base_path, execution_id):
     for file in list_files_for_execution(execution_id):
         file = file.object_name
         logger.info(file)
-        with get_file_for_execution(file) as response:
+        with get_file(file) as response:
             file = file.split("/")[-1]
-            with open(f"{base_path}\\{file}", "wb") as f:
+            file_extension = file.split(".")[-1]
+            with open(f"{base_path}\\{execution_id}.{file_extension}", "wb") as f:
                 f.write(response.data)

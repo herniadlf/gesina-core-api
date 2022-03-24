@@ -5,9 +5,9 @@ from flask import Flask, jsonify, redirect, url_for, request
 from src.encoders import CustomJSONEncoder
 from src.service.file_maker_service import make_prj_file
 from src.translations import gettext, pretty_date
-from src import logger, controller
 from src import config
 from src import login_manager
+from src import controller
 
 app = Flask(__name__)
 
@@ -40,19 +40,6 @@ def make_project_file():
         "end_date": datetime.strptime(json_request['end_date'], "%d/%m/%Y %H:%M:%S")
     }
     return make_prj_file(**data)
-
-
-@app.route("/test")
-def test():
-    from src.tasks import simulate, error_handler
-
-    logger.info("Start simulation")
-    simulate.apply_async(link_error=error_handler.s())
-    try:
-        logger.info("Receiving result")
-        return jsonify({"status": "ok"}), HTTPStatus.CREATED
-    except Exception as e:
-        logger.error(e)
 
 
 @app.errorhandler(HTTPStatus.NOT_FOUND)
