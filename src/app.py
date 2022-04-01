@@ -35,9 +35,11 @@ def health_check():
 def make_project_file():
     json_request = request.get_json()
     data = {
-        "title": json_request['title'],
-        "start_date": datetime.strptime(json_request['start_date'], "%d/%m/%Y %H:%M:%S"),
-        "end_date": datetime.strptime(json_request['end_date'], "%d/%m/%Y %H:%M:%S")
+        "title": json_request["title"],
+        "start_date": datetime.strptime(
+            json_request["start_date"], "%d/%m/%Y %H:%M:%S"
+        ),
+        "end_date": datetime.strptime(json_request["end_date"], "%d/%m/%Y %H:%M:%S"),
     }
     return make_prj_file(**data)
 
