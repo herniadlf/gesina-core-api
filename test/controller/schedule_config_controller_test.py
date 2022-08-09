@@ -12,6 +12,7 @@ DEFAULT_DATA = {
 }
 
 
+
 def test_update_only_schedule_config_frequency_success(a_client):
     log_default_user(a_client)
     original_schedule_task = schedule_task_service.get_schedule_task_config(
