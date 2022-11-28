@@ -20,7 +20,9 @@ def retrieve_plan_series(form, scheduled_config_id=None):
     if len(flow_series_to_validate) != len(flow_series_as_set):
         raise SeriesUploadError("Error: No puede repetirse un Id de serie de flujo")
     if len(stage_series_as_set.intersection(flow_series_as_set)) > 0:
-        raise SeriesUploadError("Error: No puede repetirse un Id entre series de flujo y series de altura")
+        raise SeriesUploadError(
+            "Error: No puede repetirse un Id entre series de flujo y series de altura"
+        )
 
     return merged_series
 
