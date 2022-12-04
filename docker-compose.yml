@@ -1,10 +1,12 @@
 version: '3.5'
 services:
   redis:
+    platform: linux/amd64
     image: redis
     ports:
     - "6379:6379"
   web:
+    platform: linux/amd64
     build:
       context: .
       dockerfile: Dockerfile
@@ -22,30 +24,33 @@ services:
     ports:
       - "5000:5000"
   database:
-      image: postgres:latest
-      restart: always
-      volumes:
-        - database:/var/lib/postgresql/data
-        - ./docker-entrypoint.sql:/docker-entrypoint-initdb.d/docker-entrypoint.sql
-      environment:
-        POSTGRES_PASSWORD: password
-        POSTGRES_USER: user
-        POSTGRES_DB: main
-      ports:
-        - 5432:5432
+    platform: linux/amd64
+    image: postgres:latest
+    restart: always
+    volumes:
+      - database:/var/lib/postgresql/data
+      - ./docker-entrypoint.sql:/docker-entrypoint-initdb.d/docker-entrypoint.sql
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+      POSTGRES_DB: main
+    ports:
+      - 5432:5432
   minio:
-      image: minio/minio:RELEASE.2021-07-22T05-23-32Z
-      ports:
-        - "9000:9000"
-        - "9001:9001"
-      volumes:
-        - ./minio_data:/data
-      environment:
-        - MINIO_ROOT_USER=minioadmin
-        - MINIO_ROOT_PASSWORD=password
-        - MINIO_STORAGE_USE_HTTPS=False
-      command: server /data --console-address ":9001"
+    platform: linux/amd64
+    image: minio/minio:RELEASE.2021-07-22T05-23-32Z
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ./minio_data:/data
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=password
+      - MINIO_STORAGE_USE_HTTPS=False
+    command: server /data --console-address ":9001"
   scheduler:
+    platform: linux/amd64
     build:
       context: .
       dockerfile: Dockerfile
