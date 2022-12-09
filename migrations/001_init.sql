@@ -104,7 +104,7 @@ create table if not exists "border_condition"
     river_stat text not null,
     interval text not null,
     type text not null,
-    series_id integer not null
+    series_id integer
 );
 
 create table if not exists "user_notification"

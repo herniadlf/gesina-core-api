@@ -9,9 +9,7 @@ CSV_HEADER = ["river", "reach", "river_stat", "flow"]
 
 
 def retrieve_initial_flows(form, scheduled_config_id=None):
-    from_csv = process_initial_flows_csv_file(
-        form.initial_flow_file, scheduled_config_id
-    )
+    from_csv = process_initial_flows_file(form.initial_flow_file, scheduled_config_id)
     from_form = process_initial_flows_form(form.initial_flow_list, scheduled_config_id)
     return from_csv + from_form
 
@@ -52,33 +50,39 @@ def process_initial_flows_form(initial_flow_list, scheduled_config_id=None):
     return result
 
 
-def process_initial_flows_csv_file(initial_flow_file_field, scheduled_config_id=None):
+def process_initial_flows_file(initial_flow_file_field, scheduled_config_id=None):
     result = []
     if initial_flow_file_field.data:
         buffer = initial_flow_file_field.data.read()
         content = buffer.decode()
         file = io.StringIO(content)
-        csv_data = csv.reader(file, delimiter=",")
-        header = next(csv_data)
-        if header == CSV_HEADER:
-            for row in csv_data:
-                if scheduled_config_id:
-                    initial_flow = InitialFlow(
-                        scheduled_task_id=scheduled_config_id,
-                        river=row[0],
-                        reach=row[1],
-                        river_stat=row[2],
-                        flow=row[3],
-                    )
-                else:
-                    initial_flow = InitialFlow(
-                        river=row[0],
-                        reach=row[1],
-                        river_stat=row[2],
-                        flow=row[3],
-                    )
-                result.append(initial_flow)
-        else:
-            raise FileUploadError("Error: Archivo .csv inválido")
+        if ".csv" in initial_flow_file_field.data.filename:
+            csv_data = csv.reader(file, delimiter=",")
+            header = next(csv_data)
+            if header == CSV_HEADER:
+                for row in csv_data:
+                    if scheduled_config_id:
+                        initial_flow = InitialFlow(
+                            scheduled_task_id=scheduled_config_id,
+                            river=row[0],
+                            reach=row[1],
+                            river_stat=row[2],
+                            flow=row[3],
+                        )
+                    else:
+                        initial_flow = InitialFlow(
+                            river=row[0],
+                            reach=row[1],
+                            river_stat=row[2],
+                            flow=row[3],
+                        )
+                    result.append(initial_flow)
+            else:
+                raise FileUploadError("Error: Archivo .csv inválido")
+        if ".u" in initial_flow_file_field.data.filename:
+            # Not implemented right now
+            raise FileUploadError(
+                "No está implementado para las condiciones de borde la carga mediante el archivo .u"
+            )
 
     return result

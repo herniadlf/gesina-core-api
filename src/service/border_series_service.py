@@ -9,6 +9,7 @@ from src.service.exception.file_exception import FileUploadError
 from src.service.exception.series_exception import SeriesUploadError
 
 SERIES_INTERVAL_REGEX = "^[0-9]*-(MINUTE|HOUR|DAY|WEEK)$"
+NATIVE_SERIES_INTERVAL_REGEX = r"^([0-9]*)(MINUTE|HOUR|DAY|WEEK)$"
 
 CSV_HEADERS = [
     "river",
@@ -21,7 +22,7 @@ CSV_HEADERS = [
 
 
 def retrieve_series(form, scheduled_config_id=None):
-    from_csv = process_series_csv_file(form.series_list_file, scheduled_config_id)
+    from_csv = process_series_file(form.series_list_file, scheduled_config_id)
     from_form = process_series_form(form.series_list, scheduled_config_id)
     merged_series = from_csv + from_form
     for series in merged_series:
@@ -69,37 +70,83 @@ def process_series_form(series_list, scheduled_config_id=None):
     return result
 
 
-def process_series_csv_file(series_file_field, scheduled_config_id=None):
+def process_series_file(series_file_field, scheduled_config_id=None):
     result = []
     if series_file_field.data:
         buffer = series_file_field.data.read()
         content = buffer.decode()
         file = io.StringIO(content)
-        csv_data = csv.reader(file, delimiter=",")
-        header = next(csv_data)
-        if header == CSV_HEADERS:
-            for row in csv_data:
-                if scheduled_config_id:
-                    border_condition = BorderCondition(
-                        scheduled_task_id=scheduled_config_id,
-                        river=row[0],
-                        reach=row[1],
-                        river_stat=row[2],
-                        interval=row[3],
-                        type=row[4],
-                        series_id=row[5],
+        if ".csv" in series_file_field.data.filename:
+            csv_data = csv.reader(file, delimiter=",")
+            header = next(csv_data)
+            if header == CSV_HEADERS:
+                for row in csv_data:
+                    if scheduled_config_id:
+                        border_condition = BorderCondition(
+                            scheduled_task_id=scheduled_config_id,
+                            river=row[0],
+                            reach=row[1],
+                            river_stat=row[2],
+                            interval=row[3],
+                            type=row[4],
+                            series_id=row[5],
+                        )
+                    else:
+                        border_condition = BorderCondition(
+                            river=row[0],
+                            reach=row[1],
+                            river_stat=row[2],
+                            interval=row[3],
+                            type=row[4],
+                            series_id=row[5],
+                        )
+                    result.append(border_condition)
+            else:
+                raise FileUploadError("Error: Archivo .csv inválido")
+        elif ".u" in series_file_field.data.filename:
+            for line in file.readlines():
+                line = line.rstrip()
+                if line.startswith("DSS Path=") or (
+                    line.startswith("Boundary Location=") and "river" in locals()
+                ):
+                    if scheduled_config_id:
+                        border_condition = BorderCondition(
+                            scheduled_task_id=scheduled_config_id,
+                            river=river,
+                            reach=reach,
+                            river_stat=river_stat,
+                            interval=interval,
+                            type=t,
+                        )
+                    else:
+                        border_condition = BorderCondition(
+                            river=river,
+                            reach=reach,
+                            river_stat=river_stat,
+                            interval=interval,
+                            type=t,
+                        )
+
+                    del river, reach, river_stat, interval, t
+
+                    result.append(border_condition)
+
+                if line.startswith("Boundary Location="):
+                    line_c = line.split("=")[1].split(",")
+                    river, reach, river_stat = (
+                        line_c[0].strip(),
+                        line_c[1].strip(),
+                        line_c[2].strip(),
                     )
-                else:
-                    border_condition = BorderCondition(
-                        river=row[0],
-                        reach=row[1],
-                        river_stat=row[2],
-                        interval=row[3],
-                        type=row[4],
-                        series_id=row[5],
-                    )
-                result.append(border_condition)
-        else:
-            raise FileUploadError("Error: Archivo .csv inválido")
+                elif line.startswith("Interval="):
+                    interval = line.split("=")[1].strip()
+                    r = regex.search(NATIVE_SERIES_INTERVAL_REGEX, interval)
+                    interval = f"{r.group(1)}-{r.group(2)}"
+                elif line.startswith("Stage Hydrograph="):
+                    t = line.split("=")[0].strip()
+                elif line.startswith("Flow Hydrograph="):
+                    t = line.split("=")[0].strip()
+                elif line.startswith("Lateral Inflow Hydrograph="):
+                    t = line.split("=")[0].strip()
 
     return result
